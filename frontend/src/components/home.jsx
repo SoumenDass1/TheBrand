@@ -82,7 +82,7 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="feature-title">Fast Delivery</h3>
-              <p className="feature-desc">Quick shipping directly to you</p>
+              <p className="feature-desc">Quick shipping directly to you.</p>
             </div>
           </div>
         </div>
