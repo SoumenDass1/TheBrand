@@ -1,0 +1,40 @@
+.home-container {
+    height: 100vh;
+    width: 100%;
+    background: #fafafa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+.home-box {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.15);
+}
+
+.home-box h1 {
+    margin-bottom: 10px;
+}
+
+.home-box p {
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.home-box button {
+    padding: 12px 25px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.home-box button:hover {
+    opacity: 0.8;
+}
