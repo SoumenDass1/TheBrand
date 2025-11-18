@@ -1,8 +1,9 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import "../css/login.css";
 
 function Login() {
+    const navigate = useNavigate()
     return (
         <div>
             <div className="login-page">
@@ -19,7 +20,7 @@ function Login() {
                             <input type="password" placeholder="Enter your password" required />
                         </div>
 
-                        <button type="submit" className="btn btn-primary">
+                        <button type="Submit" className="btn btn-primary" onClick={() => navigate('/')}>
                             Login
                         </button>
                     </form>

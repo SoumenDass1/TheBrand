@@ -1,7 +1,9 @@
 import React from "react";
 import "../css/signup.css";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
+  const nevigate = useNavigate()
   return (
     <div className="signup-page">
       <div className="signup-box">
@@ -27,7 +29,7 @@ function Signup() {
             <input type="password" placeholder="Create a password" required />
           </div>
 
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-primary" onClick={() => nevigate('/')}>
             Sign Up
           </button>
         </form>
