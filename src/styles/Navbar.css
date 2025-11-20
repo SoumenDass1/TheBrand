@@ -17,6 +17,7 @@
     justify-content: space-between;
     align-items: center;
     height: 80px;
+    gap: 20px;
 }
 
 .logo {
@@ -28,11 +29,56 @@
     letter-spacing: -1px;
     z-index: 1001;
     text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+    flex-shrink: 0;
+}
+
+/* Search Bar */
+.search-bar {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+    margin: 0 20px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px 40px 10px 20px;
+    border-radius: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.2);
+}
+
+.search-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-btn:hover {
+    color: #fff;
 }
 
 .nav-links {
     display: flex;
-    gap: 40px;
+    gap: 30px;
     align-items: center;
 }
 
@@ -42,6 +88,7 @@
     position: relative;
     opacity: 0.9;
     font-size: 1rem;
+    white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -79,11 +126,44 @@
 
 .nav-actions {
     display: flex;
-    gap: 20px;
+    gap: 15px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Cart Icon */
+.cart-icon-wrapper {
+    position: relative;
+    cursor: pointer;
+    margin-right: 10px;
+    color: #fff;
+    transition: transform 0.2s;
+}
+
+.cart-icon-wrapper:hover {
+    transform: scale(1.1);
+    color: var(--secondary);
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
 }
 
 .btn {
-    padding: 10px 25px;
+    padding: 8px 20px;
     border-radius: 30px;
     font-weight: 600;
     transition: all 0.3s ease;
@@ -91,6 +171,8 @@
     overflow: hidden;
     display: inline-block;
     text-align: center;
+    font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 .btn-outline {
@@ -170,6 +252,13 @@
 
 .mobile-actions {
     display: none;
+}
+
+@media (max-width: 900px) {
+    .search-bar {
+        display: none;
+        /* Hide search on smaller screens for now or move to mobile menu */
+    }
 }
 
 @media (max-width: 768px) {
