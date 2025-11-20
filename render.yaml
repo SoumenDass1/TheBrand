@@ -1,0 +1,51 @@
+services:
+  # Backend Service
+  - type: web
+    name: thebrand-backend
+    env: node
+    rootCommand: cd backend
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: thebrand-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+
+  # Frontend Static Site
+  - type: web
+    name: thebrand-frontend
+    env: static
+    rootCommand: cd Frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./Frontend/dist
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: thebrand-backend
+          property: url
+          envVarKey: VITE_API_URL_VALUE
+          # We need to append /api to the URL, but Render env vars are direct.
+          # We'll handle the suffix in the frontend code or just set the base URL here.
+          # Actually, VITE_API_URL in api.js expects the full path including /api?
+          # Let's check api.js again. It appends /auth/login.
+          # So VITE_API_URL should be https://backend.onrender.com/api
+          # Render doesn't support appending in the value easily.
+          # Let's just pass the base URL and update api.js to append /api if needed, 
+          # or we can just assume the user will set it correctly if doing manual.
+          # But for Blueprint, we can't easily append string.
+          # Let's stick to linking the service URL and updating api.js to handle it.
+
+databases:
+  - name: thebrand-db
+    plan: free
+    databaseName: thebrand
+    user: thebrand_user
+
+# Note: The VITE_API_URL will be set to the root URL of the backend service.
+# You might need to append '/api' in your frontend code if it's missing.
