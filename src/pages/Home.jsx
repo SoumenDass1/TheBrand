@@ -1,24 +1,62 @@
-import { useNavigate } from "react-router-dom";
-import "../css/home.css";
+import React, { useEffect, useState } from 'react';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import '../styles/Home.css';
 
-export default function Home() {
-    const navigate = useNavigate();
+const Home = () => {
+    const [offset, setOffset] = useState(0);
 
-    const handleLogout = () => {
-        logoutUser();
-        navigate("/login");
-    };
+    useEffect(() => {
+        const handleScroll = () => {
+            setOffset(window.pageYOffset);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
-    const user = JSON.parse(localStorage.getItem("user"));
+    const products = [
+        { id: 1, name: "Neon Headphones", price: "$299" },
+        { id: 2, name: "Cyber Watch", price: "$199" },
+        { id: 3, name: "Future Chair", price: "$399" },
+        { id: 4, name: "Mech Keyboard", price: "$149" },
+    ];
 
     return (
-        <div className="home-container">
-            <div className="home-box">
-                <h1>Welcome, {user?.name || "User"}</h1>
-                <p>You are successfully logged in to TheBrand.</p>
+        <div className="page-wrapper">
+            <Navbar />
 
-                <button onClick={handleLogout}>Logout</button>
-            </div>
+            <section className="hero">
+                <div className="hero-content" style={{ transform: `translateY(${offset * 0.5}px)` }}>
+                    <h1>THE FUTURE IS HERE</h1>
+                    <p>Experience the next generation of premium lifestyle products. Designed for the bold.</p>
+                    <a href="/products" className="cta-button">EXPLORE NOW</a>
+                </div>
+            </section>
+
+            <section className="featured-section">
+                <div className="container">
+                    <h2 className="section-title">Trending Gear</h2>
+                    <div className="product-grid">
+                        {products.map((product, index) => (
+                            <div
+                                key={product.id}
+                                className="product-card"
+                                style={{ animation: `slideUp 0.8s ease-out ${index * 0.2}s forwards`, opacity: 0, transform: 'translateY(20px)' }}
+                            >
+                                <div className="product-image"></div>
+                                <div className="product-info">
+                                    <h3 className="product-title">{product.name}</h3>
+                                    <div className="product-price">{product.price}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <Footer />
         </div>
     );
-}
+};
+
+export default Home;

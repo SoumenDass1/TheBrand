@@ -1,67 +1,47 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import "../css/login.css";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../services/api';
+import '../styles/Login.css';
 
-export default function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
+const Login = () => {
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [error, setError] = useState('');
 
-    const handleLogin = async (e) => {
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
-            const res = await fetch("http://localhost:3000/api/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                alert(data.message || "Login failed");
-                return;
-            }
-
-            // Save token + user data
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
-
-            alert("Login successful!");
-            navigate("/"); // redirect to home
-
-        } catch (error) {
-            console.error(error);
-            alert("Something went wrong");
+            const data = await api.login(formData.email, formData.password);
+            localStorage.setItem('token', data.token);
+            navigate('/');
+        } catch (err) {
+            setError(err.message);
         }
     };
 
     return (
-        <div className="login-container">
-            <div className="login-box">
-
-                <form onSubmit={handleLogin}>
+        <div className="split-screen-container">
+            <div className="left-panel">
+                <div className="login-content">
                     <div className="login-header">
-                        <h2>Welcome Back to TheBrand</h2>
-                        <p>Please login to your account</p>
+                        <h1 className="welcome-text">Welcome Back to TheBrand</h1>
+                        <p className="sub-text">Please enter your details.</p>
                     </div>
 
-                    <div className="login-form">
+                    <form onSubmit={handleSubmit} className="modern-form">
                         <div className="input-group">
                             <label>Email</label>
                             <input
                                 type="email"
-                                placeholder="Enter your email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
                                 required
+                                placeholder="Enter your email"
                             />
                         </div>
 
@@ -69,25 +49,40 @@ export default function Login() {
                             <label>Password</label>
                             <input
                                 type="password"
-                                placeholder="Enter your password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
                                 required
+                                placeholder="••••••••"
                             />
                         </div>
 
-                        <button className="login-button" type="submit">
-                            Login
-                        </button>
+                        {error && <div className="error-msg">{error}</div>}
+
+                        <div className="form-actions">
+                            <label className="remember-me">
+                                <input type="checkbox" /> Remember me
+                            </label>
+                            <a href="#" className="forgot-pass">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" className="btn-login">Sign in</button>
+                    </form>
+
+                    <div className="signup-redirect">
+                        Don't have an account? <Link to="/signup">Sign up for free</Link>
                     </div>
+                </div>
+            </div>
 
-                    <div className="signup-link">
-                        <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
-                    </div>
-
-                </form>
-
+            <div className="right-panel">
+                <div className="image-overlay">
+                    <h3>Elevate Your Style.</h3>
+                    <p>Join the most exclusive fashion community.</p>
+                </div>
             </div>
         </div>
     );
-}
+};
+
+export default Login;
