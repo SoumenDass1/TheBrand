@@ -11,7 +11,7 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/products" element={<Home />} /> {/* Reuse Home for now */}
                 <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
+                <Route path="/signup" element={<Login />} />
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>
         </BrowserRouter>

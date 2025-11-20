@@ -1,84 +1,164 @@
-/* Split Screen Login CSS */
+/* Sliding Overlay Auth CSS */
 
-.split-screen-container {
-    display: flex;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-    font-family: 'Inter', sans-serif;
-    background: #fff;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Left Panel - Login Form */
-.left-panel {
-    flex: 1;
+.auth-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #fff;
+    overflow: hidden;
+}
+
+/* --- Static Panels (Forms) --- */
+.static-panel {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding: 40px;
-    background: #ffffff;
+    justify-content: center;
+    background: #fff;
+    z-index: 1;
+    /* Below the image overlay */
+}
+
+.login-panel {
+    left: 0;
+}
+
+.signup-panel {
+    right: 0;
+}
+
+.forms-wrapper {
+    width: 100%;
+    max-width: 420px;
+    padding: 0 40px;
     position: relative;
 }
 
-.login-content {
+.auth-form {
     width: 100%;
+}
+
+/* --- Sliding Image Overlay --- */
+.image-overlay-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    /* Starts on Right (covering Signup) */
+    width: 50%;
+    height: 100%;
+    background-image: url('/assets/login-bg.png');
+    background-size: cover;
+    background-position: center;
+    z-index: 10;
+    /* On top of forms */
+    display: flex;
+    align-items: flex-end;
+    padding: 60px;
+    transition: transform 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+    /* Slow Cinematic Slide */
+}
+
+.image-overlay-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent 60%);
+}
+
+.image-content {
+    position: relative;
+    z-index: 11;
+    color: #fff;
     max-width: 400px;
-    animation: fadeIn 0.8s ease-out;
 }
 
-.login-header {
-    margin-bottom: 40px;
+.image-content h3 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    line-height: 1.1;
 }
 
-.welcome-text {
-    font-size: 2.5rem;
-    font-weight: 700;
+.image-content p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* --- Animation State --- */
+
+/* When in Signup Mode */
+.auth-container.sign-up-mode .image-overlay-panel {
+    transform: translateX(-100%);
+    /* Slide to Left (Covering Login) */
+}
+
+/* 
+   Note: 
+   - Default: Image on Right. Login (Left) visible. Signup (Right) covered.
+   - Signup Mode: Image slides Left. Login (Left) covered. Signup (Right) revealed.
+*/
+
+/* Styling Elements */
+.title {
+    font-size: 2.2rem;
+    font-weight: 800;
     color: #1a1a1a;
     margin-bottom: 10px;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
 }
 
-.sub-text {
+.subtitle {
     color: #666;
+    margin-bottom: 30px;
     font-size: 1rem;
 }
 
-.modern-form .input-group {
+.input-group {
     margin-bottom: 20px;
 }
 
-.modern-form label {
+.input-group label {
     display: block;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: #333;
     margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.modern-form input[type="email"],
-.modern-form input[type="password"] {
+.input-group input {
     width: 100%;
     padding: 14px 16px;
-    border: 1px solid #e1e1e1;
-    border-radius: 8px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background: #fcfcfc;
+    color: #333;
 }
 
-.modern-form input:focus {
-    border-color: #000;
+.input-group input:focus {
     background: #fff;
+    border-color: #000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     outline: none;
-    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
 }
 
 .form-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     font-size: 0.9rem;
 }
 
@@ -96,104 +176,68 @@
     text-decoration: none;
 }
 
-.btn-login {
+.btn-primary {
     width: 100%;
     padding: 16px;
     background: #000;
     color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: transform 0.2s, opacity 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.5px;
 }
 
-.btn-login:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
-.signup-redirect {
-    margin-top: 30px;
+.toggle-text {
+    margin-top: 25px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #666;
 }
 
-.signup-redirect a {
+.toggle-text span {
     color: #000;
     font-weight: 700;
-    text-decoration: none;
+    cursor: pointer;
     margin-left: 5px;
+    text-decoration: underline;
 }
 
 .error-msg {
     color: #d32f2f;
     background: #ffebee;
     padding: 10px;
-    border-radius: 6px;
+    border-radius: 8px;
     margin-bottom: 20px;
     font-size: 0.9rem;
+    text-align: center;
 }
 
-/* Right Panel - Image */
-.right-panel {
-    flex: 1;
-    background-image: url('/assets/login-bg.png');
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    padding: 60px;
-}
-
-.right-panel::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 60%);
-}
-
-.image-overlay {
-    position: relative;
-    z-index: 2;
-    color: #fff;
-    max-width: 400px;
-}
-
-.image-overlay h3 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 15px;
-    line-height: 1.2;
-}
-
-.image-overlay p {
-    font-size: 1.1rem;
-    opacity: 0.9;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
+/* Responsive */
 @media (max-width: 900px) {
-    .right-panel {
+    .image-overlay-panel {
         display: none;
     }
 
-    .brand-logo {
-        left: 30px;
-        top: 30px;
+    .static-panel {
+        width: 100%;
+        display: none;
+        /* Hide both by default on mobile */
+    }
+
+    /* Show only the active panel on mobile */
+    .auth-container:not(.sign-up-mode) .login-panel {
+        display: flex;
+    }
+
+    .auth-container.sign-up-mode .signup-panel {
+        display: flex;
     }
 }
