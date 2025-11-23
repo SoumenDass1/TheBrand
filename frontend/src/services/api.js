@@ -1,70 +1,66 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
-const API_URL = `${BASE_URL}/api`;
+import { API_BASE_URL, API_ENDPOINTS, STORAGE_KEYS } from '../utils/constants';
 
-export const api = {
-    login: async (email, password) => {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-        });
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || "Login failed");
+class ApiService {
+    constructor() {
+        this.baseURL = API_BASE_URL;
+    }
+
+    // Helper method for making requests
+    async request(endpoint, options = {}) {
+        const url = `${this.baseURL}${endpoint}`;
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers,
+            },
+            ...options,
+        };
+
+        // Add auth token if available
+        const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
         }
-        return response.json();
-    },
 
-    signup: async (name, email, password) => {
-        const response = await fetch(`${API_URL}/auth/signup`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+        try {
+            const response = await fetch(url, config);
+            const data = await response.json();
+
+            if (!response.ok) {
+                // Extract error message from response
+                throw new Error(data.message || `HTTP error! status: ${response.status}`);
+            }
+
+            return data;
+        } catch (error) {
+            // Network error or parsing error
+            if (error instanceof TypeError) {
+                throw new Error('Network error. Please check your connection.');
+            }
+            throw error;
+        }
+    }
+
+    // Auth Methods
+    async signup(name, email, password) {
+        return this.request(API_ENDPOINTS.AUTH.SIGNUP, {
+            method: 'POST',
             body: JSON.stringify({ name, email, password }),
         });
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || "Signup failed");
-        }
-        return response.json();
-    },
-
-    // Mock product fetch for now, replace with actual API call later
-    getProducts: async () => {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return [
-            {
-                id: 1,
-                name: "Premium Wireless Headphones",
-                price: 299.99,
-                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80",
-                category: "Electronics",
-                rating: 4.8
-            },
-            {
-                id: 2,
-                name: "Minimalist Watch",
-                price: 149.50,
-                image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80",
-                category: "Accessories",
-                rating: 4.5
-            },
-            {
-                id: 3,
-                name: "Ergonomic Office Chair",
-                price: 399.00,
-                image: "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?w=500&q=80",
-                category: "Furniture",
-                rating: 4.7
-            },
-            {
-                id: 4,
-                name: "Smart Fitness Tracker",
-                price: 89.99,
-                image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=500&q=80",
-                category: "Electronics",
-                rating: 4.2
-            }
-        ];
     }
-};
+
+    async login(email, password) {
+        return this.request(API_ENDPOINTS.AUTH.LOGIN, {
+            method: 'POST',
+            body: JSON.stringify({ email, password }),
+        });
+    }
+
+    // Health Check
+    async healthCheck() {
+        return this.request(API_ENDPOINTS.HEALTH);
+    }
+}
+
+export const api = new ApiService();
+export default api;

@@ -3,13 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = "mysql://root:@localhost:3306/thebrand"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  password String
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  password      String
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([email])
 }
+

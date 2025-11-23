@@ -1,74 +1,101 @@
-import express from "express";
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import prisma from '../config/database.js';
+import config from '../config/env.js';
+import { STATUS_CODES, MESSAGES } from '../config/constants.js';
+import { validateSignup, validateLogin } from '../middleware/validation.js';
+import { authLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
-router.post("/signup", async (req, res) => {
+// Apply rate limiter to all auth routes
+router.use(authLimiter);
+
+// Signup Route
+router.post('/signup', validateSignup, async (req, res, next) => {
     const { name, email, password } = req.body;
 
     try {
-        if (!name || !email || !password) {
-            return res.status(400).json({ message: "All fields are required" });
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+            return res.status(STATUS_CODES.CONFLICT).json({
+                success: false,
+                message: MESSAGES.EMAIL_EXISTS,
+            });
         }
 
-        const existing = await prisma.user.findUnique({ where: { email } });
-        if (existing) {
-            return res.status(400).json({ message: "Email already exists" });
-        }
+        // Hash password
+        const hashedPassword = await bcrypt.hash(password, config.bcryptRounds);
 
-        const hashed = await bcrypt.hash(password, 10);
-
-        await prisma.user.create({
-            data: { name, email, password: hashed }
+        // Create user
+        const user = await prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+            },
         });
 
-        res.json({ message: "User registered successfully" });
-
+        res.status(STATUS_CODES.CREATED).json({
+            success: true,
+            message: MESSAGES.SIGNUP_SUCCESS,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+            },
+        });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
+        next(err);
     }
 });
 
-router.post("/login", async (req, res) => {
+// Login Route
+router.post('/login', validateLogin, async (req, res, next) => {
     const { email, password } = req.body;
 
     try {
+        // Find user
         const user = await prisma.user.findUnique({ where: { email } });
-
         if (!user) {
-            return res.status(400).json({ message: "Invalid credentials" });
+            return res.status(STATUS_CODES.UNAUTHORIZED).json({
+                success: false,
+                message: MESSAGES.INVALID_CREDENTIALS,
+            });
         }
 
-        const match = await bcrypt.compare(password, user.password);
-
-        if (!match) {
-            return res.status(400).json({ message: "Invalid credentials" });
+        // Verify password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(STATUS_CODES.UNAUTHORIZED).json({
+                success: false,
+                message: MESSAGES.INVALID_CREDENTIALS,
+            });
         }
 
+        // Generate JWT token
         const token = jwt.sign(
             { id: user.id, email: user.email },
-            "SECRET123",
-            { expiresIn: "7d" }
+            config.jwtSecret,
+            { expiresIn: config.jwtExpiration }
         );
 
         res.json({
-            message: "Login successful",
+            success: true,
+            message: MESSAGES.LOGIN_SUCCESS,
             token,
             user: {
                 id: user.id,
                 name: user.name,
-                email: user.email
-            }
+                email: user.email,
+            },
         });
-
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
+        next(err);
     }
 });
 
 export default router;
+

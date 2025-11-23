@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/Navbar.css';
+import logo from '../assets/logo.png';
 
 const Navbar = ({ cartCount }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,7 +13,9 @@ const Navbar = ({ cartCount }) => {
     return (
         <nav className="navbar">
             <div className="container navbar-container">
-                <Link to="/" className="logo">TheBrand</Link>
+                <Link to="/" className="logo-link">
+                    <img src={logo} alt="TheBrand" className="logo-img" />
+                </Link>
 
                 <div className="search-bar">
                     <input type="text" placeholder="Search products..." />
@@ -28,8 +31,7 @@ const Navbar = ({ cartCount }) => {
 
                     {/* Mobile-only actions */}
                     <div className="mobile-actions">
-                        <Link to="/login" className="btn btn-outline" onClick={() => setIsMenuOpen(false)}>Login</Link>
-                        <Link to="/signup" className="btn btn-primary" onClick={() => setIsMenuOpen(false)}>Sign Up</Link>
+                        <Link to="/login" className="btn btn-outline" onClick={() => setIsMenuOpen(false)}>Profile</Link>
                     </div>
                 </div>
 
@@ -38,8 +40,10 @@ const Navbar = ({ cartCount }) => {
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="cart-icon"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                         {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
                     </div>
-                    <Link to="/login" className="btn btn-outline">Login</Link>
-                    <Link to="/signup" className="btn btn-primary">Sign Up</Link>
+
+                    <Link to="/login" className="profile-icon-wrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </Link>
                 </div>
 
                 <button className="mobile-menu-btn" onClick={toggleMenu} aria-label="Toggle menu">

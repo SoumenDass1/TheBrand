@@ -1,28 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Slider.css';
 
-const Slider = ({ images }) => {
+const Slider = ({ colors }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-        }, 1000); // Change every 1 second
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % colors.length);
+        }, 3000); // Change every 3 seconds
 
         return () => clearInterval(interval);
-    }, [images.length]);
+    }, [colors.length]);
 
     return (
         <div className="slider-container">
-            {images.map((image, index) => (
-                <div
-                    key={index}
-                    className={`slide ${index === currentIndex ? 'active' : ''}`}
-                    style={{ backgroundImage: `url(${image})` }}
-                >
-                    <div className="slide-overlay"></div>
-                </div>
-            ))}
+            <div className="slider-track" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+                {colors.map((color, index) => (
+                    <div
+                        key={index}
+                        className="slide"
+                        style={{ backgroundColor: color }}
+                    >
+                    </div>
+                ))}
+            </div>
 
             <div className="slider-content">
                 <h2>THE FUTURE OF FASHION</h2>
@@ -30,7 +31,7 @@ const Slider = ({ images }) => {
             </div>
 
             <div className="slider-indicators">
-                {images.map((_, index) => (
+                {colors.map((_, index) => (
                     <span
                         key={index}
                         className={`indicator ${index === currentIndex ? 'active' : ''}`}
