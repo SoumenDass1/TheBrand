@@ -1,0 +1,126 @@
+.products-page {
+    min-height: 100vh;
+    padding: 3rem 0;
+    background: var(--bg-secondary);
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--primary-gold);
+}
+
+.page-header h1 {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    margin-bottom: 0.75rem;
+    color: var(--primary-navy);
+    font-family: 'Playfair Display', serif;
+}
+
+.page-header p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.products-controls {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    align-items: center;
+    background: var(--bg-primary);
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.search-bar {
+    flex: 1;
+    min-width: 250px;
+}
+
+.search-bar input {
+    width: 100%;
+}
+
+.category-filters {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.filter-btn:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary-navy);
+    color: var(--primary-navy);
+}
+
+.filter-btn.active {
+    background: var(--primary-navy);
+    border-color: var(--primary-navy);
+    color: var(--text-light);
+    box-shadow: var(--shadow-md);
+}
+
+.products-grid {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.no-products {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+}
+
+.no-products p {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+    .products-page {
+        padding: 2rem 0;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .products-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.5rem;
+    }
+
+    .search-bar {
+        min-width: 100%;
+    }
+
+    .category-filters {
+        justify-content: center;
+    }
+
+    .filter-btn {
+        flex: 1;
+        min-width: 100px;
+    }
+}

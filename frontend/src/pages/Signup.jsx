@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { api } from '../services/api';
-import '../styles/Signup.css';
+import './AuthPages.css';
 
-const Signup = () => {
+function Signup() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
@@ -13,100 +10,109 @@ const Signup = () => {
         password: '',
         confirmPassword: ''
     });
-    const [error, setError] = useState('');
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         if (formData.password !== formData.confirmPassword) {
-            setError("Passwords do not match");
+            alert('Passwords do not match!');
             return;
         }
+        // TODO: Implement actual signup logic with backend
+        console.log('Signup submitted:', formData);
+        // navigate('/login');
+    };
 
-        try {
-            await api.signup(formData.name, formData.email, formData.password);
-            navigate('/login');
-        } catch (err) {
-            setError(err.message);
-        }
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
     };
 
     return (
-        <div className="page-wrapper">
-            <Navbar />
-            <div className="auth-container signup-mode">
-                <div className="auth-box">
-                    <h2 className="auth-title">Join The Future</h2>
+        <div className="auth-split-screen">
+            {/* Image Section - LEFT */}
+            <div className="auth-image-section auth-image-left" style={{ backgroundImage: 'url(/signup-model.png)' }}>
+                <div className="auth-image-overlay">
+                    <h2>Join TheBrand</h2>
+                    <p>Start your journey with premium quality products</p>
+                </div>
+            </div>
 
-                    <form onSubmit={handleSubmit}>
+            {/* Form Section - RIGHT */}
+            <div className="auth-form-section">
+                <div className="auth-form-container">
+                    <div className="auth-header">
+                        <h1>Create Account</h1>
+                        <div className="accent-line"></div>
+                        <p>Join TheBrand and start shopping today</p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="auth-form">
                         <div className="form-group">
-                            <label className="form-label">Full Name</label>
+                            <label htmlFor="name">Full Name</label>
                             <input
                                 type="text"
+                                id="name"
                                 name="name"
-                                className="form-input"
+                                placeholder="Enter your full name"
                                 value={formData.name}
                                 onChange={handleChange}
                                 required
-                                placeholder="Enter your name"
                             />
                         </div>
 
                         <div className="form-group">
-                            <label className="form-label">Email Address</label>
+                            <label htmlFor="email">Email Address</label>
                             <input
                                 type="email"
+                                id="email"
                                 name="email"
-                                className="form-input"
+                                placeholder="Enter your email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
-                                placeholder="Enter your email"
                             />
                         </div>
 
                         <div className="form-group">
-                            <label className="form-label">Password</label>
+                            <label htmlFor="password">Password</label>
                             <input
                                 type="password"
+                                id="password"
                                 name="password"
-                                className="form-input"
+                                placeholder="Create a password"
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
-                                placeholder="Create a password"
                             />
                         </div>
 
                         <div className="form-group">
-                            <label className="form-label">Confirm Password</label>
+                            <label htmlFor="confirmPassword">Confirm Password</label>
                             <input
                                 type="password"
+                                id="confirmPassword"
                                 name="confirmPassword"
-                                className="form-input"
+                                placeholder="Confirm your password"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 required
-                                placeholder="Confirm your password"
                             />
                         </div>
 
-                        {error && <div style={{ color: '#ff5fff', marginBottom: '15px', textAlign: 'center' }}>{error}</div>}
-
-                        <button type="submit" className="auth-button">Create Account</button>
+                        <button type="submit" className="btn btn-primary btn-full">
+                            Create Account
+                        </button>
                     </form>
 
-                    <div className="auth-footer">
-                        Already have an account? <Link to="/login" className="auth-link">Login</Link>
+                    <div className="auth-switch">
+                        <p>Already have an account? <Link to="/login">Sign in</Link></p>
                     </div>
                 </div>
             </div>
-            <Footer />
         </div>
     );
-};
+}
 
 export default Signup;
