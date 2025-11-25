@@ -1,10 +1,88 @@
+/* Home Page - Classic Premium */
 .home-page {
-    min-height: 100vh;
+    background: var(--primary-white);
+    padding-bottom: 6rem;
 }
 
-.featured-section {
-    padding: 5rem 0;
-    background: var(--bg-primary);
+/* Featured Categories */
+.featured-categories {
+    padding: 6rem 0;
+    background: var(--primary-white);
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.category-card {
+    position: relative;
+    overflow: hidden;
+    height: 600px;
+    cursor: pointer;
+}
+
+.category-image {
+    width: 100%;
+    height: 100%;
+}
+
+.category-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--ease-out-expo);
+    filter: grayscale(20%);
+}
+
+.category-card:hover .category-image img {
+    transform: scale(1.05);
+    filter: grayscale(0%);
+}
+
+.category-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 3rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+    color: var(--primary-white);
+    transform: translateY(20px);
+    transition: transform 0.4s ease;
+}
+
+.category-card:hover .category-content {
+    transform: translateY(0);
+}
+
+.category-content h3 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: 400;
+}
+
+.btn-link {
+    color: var(--primary-white);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--primary-white);
+    padding-bottom: 4px;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.1s;
+}
+
+.category-card:hover .btn-link {
+    opacity: 1;
+}
+
+/* Featured Products */
+.featured-products {
+    padding: 6rem 0;
+    background: var(--bg-surface);
 }
 
 .section-header {
@@ -13,68 +91,81 @@
 }
 
 .section-title {
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-family: var(--font-display);
+    font-size: 3rem;
     margin-bottom: 1rem;
-    color: var(--primary-navy);
-    font-family: 'Playfair Display', serif;
+    color: var(--primary-black);
+    font-weight: 400;
 }
 
 .section-subtitle {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto 1.5rem;
+    font-family: var(--font-body);
+    color: var(--text-muted);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
 }
 
-.products-grid {
-    animation: fadeIn 0.8s ease-out;
-}
-
-.cta-section {
-    padding: 5rem 0;
-    background: var(--bg-secondary);
-    border-top: 2px solid var(--border-light);
-    border-bottom: 2px solid var(--border-light);
-}
-
-.cta-content {
+/* Promo Banner */
+.promo-banner {
+    padding: 8rem 0;
+    background: #f4f4f4;
     text-align: center;
-    padding: 4rem 2rem;
-    max-width: 700px;
-    margin: 0 auto;
-    background: var(--bg-primary);
-    border: 2px solid var(--primary-gold);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
+    margin: 4rem 0;
 }
 
-.cta-content h2 {
-    font-size: clamp(1.75rem, 3vw, 2.5rem);
-    margin-bottom: 1rem;
-    color: var(--primary-navy);
-    font-family: 'Playfair Display', serif;
+.promo-content h2 {
+    font-family: var(--font-display);
+    font-size: 4rem;
 }
 
 .cta-content p {
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.cta-buttons .btn {
+    border-color: var(--primary-white);
+    color: var(--primary-white);
+}
+
+.cta-buttons .btn:hover {
+    background: var(--primary-white);
+    color: var(--primary-black);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-    .featured-section {
-        padding: 3rem 0;
+    section {
+        padding: 4rem 0;
     }
 
-    .section-header {
-        margin-bottom: 2rem;
+    .section-title {
+        font-size: 2.5rem;
     }
 
-    .cta-section {
-        padding: 3rem 0;
+    .category-products-section .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
     }
 
-    .cta-content {
-        padding: 3rem 1.5rem;
+    .category-products-section .section-title {
+        font-size: 2.5rem;
+    }
+
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
     }
 }

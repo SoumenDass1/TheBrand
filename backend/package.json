@@ -1,0 +1,37 @@
+{
+  "name": "thebrand-backend",
+  "version": "1.0.0",
+  "description": "Backend API for TheBrand e-commerce platform with Prisma",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:studio": "prisma studio",
+    "seed": "node scripts/seedDatabase.js",
+    "check": "node scripts/checkDatabase.js"
+  },
+  "keywords": [
+    "ecommerce",
+    "api",
+    "mongodb",
+    "prisma"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "@prisma/client": "^5.7.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "express-validator": "^7.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "prisma": "^5.7.1"
+  }
+}
