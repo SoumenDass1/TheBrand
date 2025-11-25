@@ -47,10 +47,10 @@ const HERO_SLIDES = [
     },
     {
         id: 7,
-        image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2020&auto=format&fit=crop&ixlib=rb-4.0.3",
-        title: "Bold\nColors",
-        subtitle: "Vibrant fashion statements.",
-        eyebrow: "Women's Trending"
+        image: "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?q=80&w=2076&auto=format&fit=crop&ixlib=rb-4.0.3",
+        title: "Kids\nStyle",
+        subtitle: "Playful fashion for little ones.",
+        eyebrow: "Kids Collection"
     },
     {
         id: 8,
@@ -61,10 +61,10 @@ const HERO_SLIDES = [
     },
     {
         id: 9,
-        image: "https://images.unsplash.com/photo-1529139574466-a302c27e3844?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3",
-        title: "Evening\nWear",
-        subtitle: "Elegant outfits for special occasions.",
-        eyebrow: "Women's Evening"
+        image: "https://imgs.search.brave.com/cFRPL42FM6Pd0xo6oyeF4Wm6KyctAxxZor_hGcCTL1E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMubmlrZS5jb20v/YS9pbWFnZXMvdF93/ZWJfcHdfNTkyX3Yy/L2ZfYXV0by9lYzhj/ZTMxMC04YjczLTRj/NzQtYjNlZC1jOGE4/N2E2YjA0N2MvSytO/U1crQ0xVQitGTEMr/SERZK0xCUi5wbmc",
+        title: "Kids\nFashion",
+        subtitle: "Playful styles for young hearts.",
+        eyebrow: "Kids Collection"
     },
     {
         id: 10,

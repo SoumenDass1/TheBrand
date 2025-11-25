@@ -54,7 +54,11 @@
 
 .hero-slide.active .hero-image img {
     transform: scale(1.05);
-    /* Zoom out effect */
+}
+
+/* Special positioning for slide 9 (kids) - crop bottom, show face */
+.hero-slide:nth-child(9) .hero-image img {
+    object-position: top;
 }
 
 /* Content */
