@@ -16,7 +16,8 @@ const Settings = () => {
         name: user?.name || '',
         email: user?.email || '',
         phone: user?.phone || '',
-        address: user?.address || '',
+        addressLine1: user?.addressLine1 || '',
+        addressLine2: user?.addressLine2 || '',
         city: user?.city || '',
         state: user?.state || '',
         zip: user?.zip || '',
@@ -216,16 +217,30 @@ const Settings = () => {
                             <h3 className="card-title mb-6">Address Details</h3>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Street Address</label>
+                                    <label>Address Line 1</label>
                                     <div className="input-wrapper">
                                         <MapPin size={18} className="input-icon" />
                                         <input
                                             type="text"
-                                            name="address"
-                                            value={formData.address}
+                                            name="addressLine1"
+                                            value={formData.addressLine1}
                                             onChange={handleChange}
                                             className="form-input"
-                                            placeholder="123 Main St"
+                                            placeholder="Street address, P.O. box, etc."
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-group full-width">
+                                    <label>Address Line 2 (Optional)</label>
+                                    <div className="input-wrapper">
+                                        <MapPin size={18} className="input-icon" />
+                                        <input
+                                            type="text"
+                                            name="addressLine2"
+                                            value={formData.addressLine2}
+                                            onChange={handleChange}
+                                            className="form-input"
+                                            placeholder="Apartment, suite, unit, etc."
                                         />
                                     </div>
                                 </div>

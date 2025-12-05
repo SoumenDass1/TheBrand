@@ -180,7 +180,15 @@ const Signup = () => {
                         </div>
 
                         <div className="social-login">
-                            <button type="button" className="social-btn">
+                            <button type="button" className="social-btn" onClick={async () => {
+                                setIsLoading(true);
+                                // Simulate Google Login
+                                await new Promise(resolve => setTimeout(resolve, 1500));
+                                // In a real app, this would register the user if they don't exist
+                                await login('google-user@example.com', 'google-pass');
+                                navigate('/');
+                                setIsLoading(false);
+                            }}>
                                 <img src="https://www.google.com/favicon.ico" alt="Google" />
                                 Continue with Google
                             </button>

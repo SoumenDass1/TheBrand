@@ -47,6 +47,22 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
     };
 
+    const placeOrder = (orderDetails) => {
+        const newOrder = {
+            id: `ORD-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`,
+            date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+            total: cartTotal,
+            status: 'Processing',
+            items: [...cartItems],
+            ...orderDetails
+        };
+
+        const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+        localStorage.setItem('orders', JSON.stringify([newOrder, ...existingOrders]));
+        clearCart();
+        return newOrder;
+    };
+
     const cartTotal = cartItems.reduce(
         (total, item) => total + item.price * item.quantity,
         0
@@ -61,7 +77,9 @@ export const CartProvider = ({ children }) => {
                 addToCart,
                 removeFromCart,
                 updateQuantity,
+                updateQuantity,
                 clearCart,
+                placeOrder,
                 cartTotal,
                 cartCount,
             }}

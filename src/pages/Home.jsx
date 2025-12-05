@@ -4,63 +4,64 @@ import { ArrowRight, Star, Truck, ShieldCheck, RefreshCw, ChevronLeft, ChevronRi
 import ProductCard from '../components/ProductCard';
 import '../css/Home.css';
 
+import { products } from '../data/products';
+
+const heroSlides = [
+    {
+        id: 1,
+        image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1950&q=80',
+        badge: 'New Arrivals 2025',
+        title: "Discover Products You'll Love",
+        subtitle: "Shop the latest trends in electronics, fashion, and accessories. Quality products, unbeatable prices.",
+        cta: "Shop Now"
+    },
+    {
+        id: 2,
+        image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1950&q=80',
+        badge: 'Fashion Week',
+        title: "Elevate Your Style Game",
+        subtitle: "Explore our curated collection of premium clothing and accessories for the modern individual.",
+        cta: "View Collection"
+    },
+    {
+        id: 3,
+        image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1950&q=80',
+        badge: 'Limited Edition',
+        title: "Exclusive Designer Pieces",
+        subtitle: "Stand out from the crowd with our unique, limited-time designer collaborations.",
+        cta: "Shop Exclusive"
+    },
+    {
+        id: 4,
+        image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1950&q=80',
+        badge: 'Winter Collection',
+        title: "Cozy & Chic Essentials",
+        subtitle: "Stay warm in style with our premium winter wear collection.",
+        cta: "Shop Winter"
+    },
+    {
+        id: 5,
+        image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1950&q=80',
+        badge: 'Travel Gear',
+        title: "Adventure Awaits",
+        subtitle: "Durable and stylish travel accessories for your next journey.",
+        cta: "Explore Gear"
+    },
+    {
+        id: 6,
+        image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1950&q=80',
+        badge: 'Tech Deals',
+        title: "Smart Living",
+        subtitle: "Upgrade your lifestyle with the latest smart home gadgets.",
+        cta: "Shop Tech"
+    }
+];
+
 const Home = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
     const [email, setEmail] = useState('');
     const [newsletterStatus, setNewsletterStatus] = useState('idle'); // idle, success, error
-
-    // Hero Slides
-    const heroSlides = [
-        {
-            id: 1,
-            image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1950&q=80',
-            badge: 'New Arrivals 2025',
-            title: "Discover Products You'll Love",
-            subtitle: "Shop the latest trends in electronics, fashion, and accessories. Quality products, unbeatable prices.",
-            cta: "Shop Now"
-        },
-        {
-            id: 2,
-            image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1950&q=80',
-            badge: 'Fashion Week',
-            title: "Elevate Your Style Game",
-            subtitle: "Explore our curated collection of premium clothing and accessories for the modern individual.",
-            cta: "View Collection"
-        },
-        {
-            id: 3,
-            image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1950&q=80',
-            badge: 'Limited Edition',
-            title: "Exclusive Designer Pieces",
-            subtitle: "Stand out from the crowd with our unique, limited-time designer collaborations.",
-            cta: "Shop Exclusive"
-        },
-        {
-            id: 4,
-            image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1950&q=80',
-            badge: 'Winter Collection',
-            title: "Cozy & Chic Essentials",
-            subtitle: "Stay warm in style with our premium winter wear collection.",
-            cta: "Shop Winter"
-        },
-        {
-            id: 5,
-            image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1950&q=80',
-            badge: 'Travel Gear',
-            title: "Adventure Awaits",
-            subtitle: "Durable and stylish travel accessories for your next journey.",
-            cta: "Explore Gear"
-        },
-        {
-            id: 6,
-            image: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1950&q=80',
-            badge: 'Tech Deals',
-            title: "Smart Living",
-            subtitle: "Upgrade your lifestyle with the latest smart home gadgets.",
-            cta: "Shop Tech"
-        }
-    ];
 
     // Auto-change background every 5 seconds
     useEffect(() => {
@@ -71,7 +72,7 @@ const Home = () => {
         }, 5000);
 
         return () => clearInterval(interval);
-    }, [isPaused, heroSlides.length]);
+    }, [isPaused]);
 
     const nextSlide = () => {
         setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
@@ -94,16 +95,7 @@ const Home = () => {
         }, 1000);
     };
 
-    const featuredProducts = [
-        { id: 1, name: 'Premium Leather Watch', price: 299, originalPrice: 399, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80', badge: 'sale', rating: 4.8 },
-        { id: 2, name: 'Designer Sunglasses', price: 189, image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=800&q=80', badge: 'new', rating: 4.9 },
-        { id: 3, name: 'Wireless Headphones', price: 249, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80', rating: 4.7 },
-        { id: 4, name: 'Minimalist Backpack', price: 129, image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80', rating: 4.6 },
-        { id: 5, name: 'Smart Fitness Tracker', price: 89, originalPrice: 129, image: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?auto=format&fit=crop&w=800&q=80', badge: 'sale', rating: 4.5 },
-        { id: 6, name: 'Cotton T-Shirt', price: 29, image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80', rating: 4.3 },
-        { id: 7, name: 'Running Shoes', price: 119, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80', badge: 'new', rating: 4.8 },
-        { id: 8, name: 'Leather Wallet', price: 49, image: 'https://images.unsplash.com/photo-1627123424574-181ce5171c98?auto=format&fit=crop&w=800&q=80', rating: 4.7 },
-    ];
+    const featuredProducts = products.slice(0, 8);
 
     const categories = [
         { name: 'Accessories', image: 'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?auto=format&fit=crop&w=800&q=80', count: '120+ Products' },
