@@ -20,7 +20,7 @@ const Settings = () => {
         addressLine2: user?.addressLine2 || '',
         city: user?.city || '',
         state: user?.state || '',
-        zip: user?.zip || '',
+        zipCode: user?.zipCode || '',
         country: user?.country || '',
         avatar: user?.avatar || null
     });
@@ -32,6 +32,13 @@ const Settings = () => {
                 ...prev,
                 name: user.name || '',
                 email: user.email || '',
+                phone: user.phone || '',
+                addressLine1: user.addressLine1 || '',
+                addressLine2: user.addressLine2 || '',
+                city: user.city || '',
+                state: user.state || '',
+                zipCode: user.zipCode || '',
+                country: user.country || '',
                 avatar: user.avatar || null
             }));
         }
@@ -268,8 +275,8 @@ const Settings = () => {
                                     <label>Zip Code</label>
                                     <input
                                         type="text"
-                                        name="zip"
-                                        value={formData.zip}
+                                        name="zipCode"
+                                        value={formData.zipCode}
                                         onChange={handleChange}
                                         className="form-input"
                                     />
