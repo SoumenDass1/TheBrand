@@ -3,6 +3,8 @@ import { Search, SlidersHorizontal, Grid, List, X } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import '../css/Shop.css';
 
+import { products } from '../data/products';
+
 const Shop = () => {
     const [showFilters, setShowFilters] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -14,145 +16,9 @@ const Shop = () => {
         inStock: false,
     });
 
-    // Fixed Products (same as in ProductDetails)
-    const allProducts = [
-        {
-            id: 1,
-            name: 'Premium Leather Watch',
-            price: 299,
-            originalPrice: 399,
-            category: 'Accessories',
-            image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
-            inStock: true,
-            rating: 4.8,
-            badge: 'sale'
-        },
-        {
-            id: 2,
-            name: 'Designer Sunglasses',
-            price: 189,
-            originalPrice: 240,
-            category: 'Accessories',
-            image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=800&q=80',
-            inStock: true,
-            rating: 4.9,
-            badge: 'new'
-        },
-        {
-            id: 3,
-            name: 'Wireless Headphones',
-            price: 249,
-            originalPrice: 329,
-            category: 'Electronics',
-            image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
-            inStock: true,
-            rating: 4.7,
-            badge: null
-        },
-        {
-            id: 4,
-            name: 'Minimalist Backpack',
-            price: 129,
-            originalPrice: 179,
-            category: 'Fashion',
-            image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80',
-            inStock: true,
-            rating: 4.6,
-            badge: null
-        },
-        {
-            id: 5,
-            name: 'Smart Fitness Band',
-            price: 99,
-            originalPrice: 139,
-            category: 'Electronics',
-            image: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?auto=format&fit=crop&w=800&q=80',
-            inStock: true,
-            rating: 4.5,
-            badge: 'sale'
-        },
-        {
-            id: 6,
-            name: 'Leather Wallet',
-            price: 79,
-            originalPrice: 99,
-            category: 'Accessories',
-            image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80',
-            inStock: true,
-            rating: 4.4,
-            badge: null
-        },
-        {
-            id: 7,
-            name: 'Wireless Mouse',
-            price: 49,
-            originalPrice: 69,
-            category: 'Electronics',
-            image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?auto=format&fit=crop&w=800&q=80',
-            inStock: false,
-            rating: 4.3,
-            badge: null
-        },
-        {
-            id: 8,
-            name: 'Cotton T-Shirt',
-            price: 29,
-            originalPrice: 39,
-            category: 'Fashion',
-            image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80',
-            inStock: true,
-            rating: 4.2,
-            badge: 'new'
-        },
-        {
-            id: 9,
-            name: 'Running Shoes',
-            price: 159,
-            originalPrice: 199,
-            category: 'Fashion',
-            image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80',
-            inStock: true,
-            rating: 4.7,
-            badge: null
-        },
-        {
-            id: 10,
-            name: 'Smartphone Case',
-            price: 19,
-            originalPrice: 29,
-            category: 'Accessories',
-            image: 'https://images.unsplash.com/photo-1601972600418-5ffbf67078f2?auto=format&fit=crop&w=800&q=80',
-            inStock: true,
-            rating: 4.1,
-            badge: null
-        },
-        {
-            id: 11,
-            name: 'Bluetooth Speaker',
-            price: 89,
-            originalPrice: 119,
-            category: 'Electronics',
-            image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=80',
-            inStock: true,
-            rating: 4.6,
-            badge: 'sale'
-        },
-        {
-            id: 12,
-            name: 'Denim Jacket',
-            price: 149,
-            originalPrice: 199,
-            category: 'Fashion',
-            image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80',
-            inStock: true,
-            rating: 4.5,
-            badge: null
-        }
-    ];
-
     // Filter Logic
     const filteredProducts = useMemo(() => {
-        return allProducts
+        return products
             .filter((p) => {
                 const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
                 const matchesCategory = filters.categories.length === 0 || filters.categories.includes(p.category);
@@ -285,7 +151,7 @@ const Shop = () => {
                         {/* Categories */}
                         <div className="filter-group">
                             <h4>Categories</h4>
-                            {['Electronics', 'Fashion', 'Accessories'].map(cat => (
+                            {['Accessories', 'Electronics', 'Fashion', 'Home', 'Sports', 'Stationery'].map(cat => (
                                 <label key={cat} className="filter-checkbox">
                                     <input
                                         type="checkbox"
@@ -293,7 +159,7 @@ const Shop = () => {
                                         onChange={() => handleCategoryToggle(cat)}
                                     />
                                     <span>{cat}</span>
-                                    <span className="count">({allProducts.filter(p => p.category === cat).length})</span>
+                                    <span className="count">({products.filter(p => p.category === cat).length})</span>
                                 </label>
                             ))}
                         </div>

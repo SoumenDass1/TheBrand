@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import './index.css';
@@ -13,6 +14,8 @@ const ProductDetails = lazy(() => import('./pages/ProductDetails'));
 const Login = lazy(() => import('./pages/Login'));
 const Signup = lazy(() => import('./pages/Signup'));
 const Cart = lazy(() => import('./pages/Cart'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const Orders = lazy(() => import('./pages/Orders'));
 const Settings = lazy(() => import('./pages/Settings'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
@@ -46,14 +49,41 @@ function App() {
                     <Layout>
                         <Suspense fallback={<Loading />}>
                             <Routes>
+                                {/* Public Routes */}
                                 <Route path="/" element={<Home />} />
                                 <Route path="/shop" element={<Shop />} />
                                 <Route path="/product/:id" element={<ProductDetails />} />
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/signup" element={<Signup />} />
-                                <Route path="/cart" element={<Cart />} />
-                                <Route path="/account/settings" element={<Settings />} />
-                                <Route path="/admin" element={<AdminDashboard />} />
+
+                                {/* Protected Routes - Requires Login */}
+                                <Route path="/cart" element={
+                                    <ProtectedRoute>
+                                        <Cart />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/checkout" element={
+                                    <ProtectedRoute>
+                                        <Checkout />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/account/orders" element={
+                                    <ProtectedRoute>
+                                        <Orders />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/account/settings" element={
+                                    <ProtectedRoute>
+                                        <Settings />
+                                    </ProtectedRoute>
+                                } />
+
+                                {/* Admin Routes - Requires Admin Role */}
+                                <Route path="/admin" element={
+                                    <AdminRoute>
+                                        <AdminDashboard />
+                                    </AdminRoute>
+                                } />
                             </Routes>
                         </Suspense>
                         <Toaster position="top-center" />

@@ -10,14 +10,16 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const updateUser = (updatedData) => {
-        setUser(prev => {
-            const newUser = { ...prev, ...updatedData };
-            // Persist to localStorage for demo purposes
-            localStorage.setItem('user_data', JSON.stringify(newUser));
-            return newUser;
-        });
-        toast.success('Profile updated');
+    const updateUser = async (updatedData) => {
+        try {
+            const { data } = await api.put('/auth/profile', updatedData);
+            setUser(data);
+            toast.success('Profile updated');
+            return true;
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Update failed');
+            return false;
+        }
     };
 
     useEffect(() => {
@@ -25,15 +27,12 @@ export const AuthProvider = ({ children }) => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    // Check if we have saved user data
-                    const savedUser = localStorage.getItem('user_data');
-                    if (savedUser) {
-                        setUser(JSON.parse(savedUser));
-                    } else {
-                        setUser({ name: 'Test User', email: 'user@example.com', role: 'user' });
-                    }
+                    const { data } = await api.get('/auth/profile');
+                    setUser(data);
                 } catch (error) {
+                    console.error('Auth check failed:', error);
                     localStorage.removeItem('token');
+                    setUser(null);
                 }
             }
             setLoading(false);
@@ -43,38 +42,95 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            // Mock Login
-            localStorage.setItem('token', 'dummy-token');
-            const userData = { name: 'Test User', email, role: 'user' };
-            setUser(userData);
-            localStorage.setItem('user_data', JSON.stringify(userData));
+            const { data } = await api.post('/auth/login', { email, password });
+            localStorage.setItem('token', data.token);
+            setUser(data);
             toast.success('Logged in successfully');
             return true;
         } catch (error) {
-            toast.error('Login failed');
+            toast.error(error.response?.data?.message || 'Login failed');
+            return false;
+        }
+    };
+
+    const googleLogin = async (token) => {
+        try {
+            const { data } = await api.post('/auth/google', { token });
+            localStorage.setItem('token', data.token);
+            setUser(data);
+            toast.success('Logged in with Google');
+            return true;
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Google login failed');
             return false;
         }
     };
 
     const logout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('user_data');
         setUser(null);
         toast.success('Logged out');
     };
 
     const register = async (userData) => {
         try {
-            toast.success('Registration successful! Please login.');
+            const { data } = await api.post('/auth/register', userData);
+            localStorage.setItem('token', data.token);
+            setUser(data);
+            toast.success('Registration successful!');
             return true;
         } catch (error) {
-            toast.error('Registration failed');
+            toast.error(error.response?.data?.message || 'Registration failed');
+            return false;
+        }
+    };
+
+    const changePassword = async (currentPassword, newPassword) => {
+        try {
+            await api.put('/password/change', { currentPassword, newPassword });
+            toast.success('Password changed successfully');
+            return true;
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to change password');
+            return false;
+        }
+    };
+
+    const forgotPassword = async (email) => {
+        try {
+            await api.post('/password/forgot', { email });
+            toast.success('If email exists, reset instructions will be sent');
+            return true;
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to process request');
+            return false;
+        }
+    };
+
+    const resetPassword = async (token, newPassword) => {
+        try {
+            await api.post('/password/reset', { token, newPassword });
+            toast.success('Password reset successful');
+            return true;
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to reset password');
             return false;
         }
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, register, updateUser, loading }}>
+        <AuthContext.Provider value={{
+            user,
+            login,
+            logout,
+            register,
+            updateUser,
+            googleLogin,
+            changePassword,
+            forgotPassword,
+            resetPassword,
+            loading
+        }}>
             {!loading && children}
         </AuthContext.Provider>
     );

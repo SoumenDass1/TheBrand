@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
 import '../css/Auth.css';
 
 const Signup = () => {
@@ -15,7 +16,7 @@ const Signup = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const { register } = useAuth();
+    const { register, googleLogin } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -180,10 +181,23 @@ const Signup = () => {
                         </div>
 
                         <div className="social-login">
-                            <button type="button" className="social-btn">
-                                <img src="https://www.google.com/favicon.ico" alt="Google" />
-                                Continue with Google
-                            </button>
+                            <GoogleLogin
+                                onSuccess={async (credentialResponse) => {
+                                    setIsLoading(true);
+                                    await googleLogin(credentialResponse.credential);
+                                    navigate('/');
+                                    setIsLoading(false);
+                                }}
+                                onError={() => {
+                                    console.log('Signup Failed');
+                                    setIsLoading(false);
+                                }}
+                                useOneTap
+                                theme="outline"
+                                size="large"
+                                width="100%"
+                                text="signup_with"
+                            />
                         </div>
                     </form>
 

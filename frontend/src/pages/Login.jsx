@@ -2,22 +2,29 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
 import '../css/Auth.css';
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+    });
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const { login } = useAuth();
+    const [error, setError] = useState('');
+    const { login, googleLogin } = useAuth();
     const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setError('');
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-
-        const success = await login(email, password);
-
+        const success = await login(formData.email, formData.password);
         if (success) {
             navigate('/');
         }
@@ -30,12 +37,12 @@ const Login = () => {
             <div className="auth-image-side">
                 <div className="auth-image-overlay"></div>
                 <img
-                    src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1950&q=80"
-                    alt="Shopping"
+                    src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1950&q=80"
+                    alt="Fashion"
                 />
                 <div className="auth-image-content">
-                    <h2>Welcome to TheBrand</h2>
-                    <p>Your favorite products, just a click away</p>
+                    <h2>Welcome Back</h2>
+                    <p>We're so excited to see you again!</p>
                 </div>
             </div>
 
@@ -48,21 +55,28 @@ const Login = () => {
 
                 <div className="auth-content">
                     <div className="auth-header">
-                        <h1>Welcome Back</h1>
-                        <p>Sign in to continue shopping</p>
+                        <h1>Sign In</h1>
+                        <p>Welcome back! Please enter your details.</p>
                     </div>
 
                     <form className="auth-form" onSubmit={handleSubmit}>
+                        {error && (
+                            <div className="error-message">
+                                {error}
+                            </div>
+                        )}
+
                         <div className="form-group">
                             <label htmlFor="email">Email</label>
                             <div className="input-wrapper">
                                 <Mail size={20} className="input-icon" />
                                 <input
                                     id="email"
+                                    name="email"
                                     type="email"
                                     placeholder="you@example.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={formData.email}
+                                    onChange={handleChange}
                                     required
                                 />
                             </div>
@@ -74,10 +88,11 @@ const Login = () => {
                                 <Lock size={20} className="input-icon" />
                                 <input
                                     id="password"
+                                    name="password"
                                     type={showPassword ? 'text' : 'password'}
                                     placeholder="••••••••"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={formData.password}
+                                    onChange={handleChange}
                                     required
                                 />
                                 <button
@@ -96,7 +111,7 @@ const Login = () => {
                                 <span>Remember me</span>
                             </label>
                             <Link to="/forgot-password" className="forgot-link">
-                                Forgot?
+                                Forgot password?
                             </Link>
                         </div>
 
@@ -113,10 +128,22 @@ const Login = () => {
                         </div>
 
                         <div className="social-login">
-                            <button type="button" className="social-btn">
-                                <img src="https://www.google.com/favicon.ico" alt="Google" />
-                                Continue with Google
-                            </button>
+                            <GoogleLogin
+                                onSuccess={async (credentialResponse) => {
+                                    setIsLoading(true);
+                                    await googleLogin(credentialResponse.credential);
+                                    navigate('/');
+                                    setIsLoading(false);
+                                }}
+                                onError={() => {
+                                    console.log('Login Failed');
+                                    setIsLoading(false);
+                                }}
+                                useOneTap
+                                theme="outline"
+                                size="large"
+                                width="100%"
+                            />
                         </div>
                     </form>
 

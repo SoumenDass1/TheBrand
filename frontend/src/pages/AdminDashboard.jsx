@@ -1,38 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut,
     TrendingUp, DollarSign, Box
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 
 const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [loading, setLoading] = useState(true);
+    const [dashboardData, setDashboardData] = useState({
+        totalSales: 0,
+        totalOrders: 0,
+        totalProducts: 0,
+        totalUsers: 0,
+        recentOrders: []
+    });
+
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        fetchDashboardData();
+    }, []);
+
+    const fetchDashboardData = async () => {
+        try {
+            const { data } = await api.get('/admin/stats');
+            setDashboardData({
+                totalSales: data.totalSales || 0,
+                totalOrders: data.totalOrders || 0,
+                totalProducts: data.totalProducts || 0,
+                totalUsers: data.totalUsers || 0,
+                recentOrders: data.recentOrders || []
+            });
+        } catch (error) {
+            console.error('Failed to fetch dashboard data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(amount);
+    };
+
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
 
     const stats = [
-        { title: 'Total Sales', value: '$12,450', icon: DollarSign, color: 'bg-green-100 text-green-600' },
-        { title: 'Total Orders', value: '156', icon: ShoppingCart, color: 'bg-blue-100 text-blue-600' },
-        { title: 'Total Products', value: '48', icon: Box, color: 'bg-purple-100 text-purple-600' },
-        { title: 'Total Users', value: '2,300', icon: Users, color: 'bg-orange-100 text-orange-600' },
+        { title: 'Total Sales', value: formatCurrency(dashboardData.totalSales), icon: DollarSign, color: 'bg-green-100 text-green-600' },
+        { title: 'Total Orders', value: dashboardData.totalOrders.toString(), icon: ShoppingCart, color: 'bg-blue-100 text-blue-600' },
+        { title: 'Total Products', value: dashboardData.totalProducts.toString(), icon: Box, color: 'bg-purple-100 text-purple-600' },
+        { title: 'Total Users', value: dashboardData.totalUsers.toString(), icon: Users, color: 'bg-orange-100 text-orange-600' },
     ];
 
-    const recentOrders = [
-        { id: '#ORD-001', customer: 'John Doe', date: '2025-12-01', amount: '$299.00', status: 'Delivered' },
-        { id: '#ORD-002', customer: 'Jane Smith', date: '2025-12-02', amount: '$159.00', status: 'Processing' },
-        { id: '#ORD-003', customer: 'Mike Johnson', date: '2025-12-03', amount: '$89.00', status: 'Shipped' },
-        { id: '#ORD-004', customer: 'Sarah Wilson', date: '2025-12-03', amount: '$450.00', status: 'Pending' },
-    ];
+    const handleLogout = () => {
+        logout();
+        navigate('/');
+    };
 
     const SidebarItem = ({ id, icon: Icon, label }) => (
         <button
             onClick={() => setActiveTab(id)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === id
-                    ? 'bg-primary text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
+                ? 'bg-primary text-white'
+                : 'text-gray-600 hover:bg-gray-100'
                 }`}
         >
             <Icon size={20} />
             <span className="font-medium">{label}</span>
         </button>
     );
+
+    if (loading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen bg-gray-50">
@@ -49,7 +105,10 @@ const AdminDashboard = () => {
                     <SidebarItem id="settings" icon={Settings} label="Settings" />
                 </nav>
                 <div className="absolute bottom-0 w-64 p-4 border-t border-gray-200">
-                    <button className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
                         <LogOut size={20} />
                         <span className="font-medium">Logout</span>
                     </button>
@@ -99,23 +158,32 @@ const AdminDashboard = () => {
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                                {recentOrders.map((order) => (
-                                    <tr key={order.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap font-medium text-primary">{order.id}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">{order.customer}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">{order.date}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-gray-900 font-medium">{order.amount}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                                                    order.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
-                                                        order.status === 'Shipped' ? 'bg-purple-100 text-purple-800' :
-                                                            'bg-yellow-100 text-yellow-800'}`}>
-                                                {order.status}
-                                            </span>
+                                {dashboardData.recentOrders.length > 0 ? (
+                                    dashboardData.recentOrders.map((order) => (
+                                        <tr key={order.id}>
+                                            <td className="px-6 py-4 whitespace-nowrap font-medium text-primary">#{order.id}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-gray-900">{order.user?.name || 'N/A'}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-gray-500">{formatDate(order.createdAt)}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-gray-900 font-medium">{formatCurrency(order.total)}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                    ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                                                        order.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
+                                                            order.status === 'Shipped' ? 'bg-purple-100 text-purple-800' :
+                                                                order.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
+                                                                    'bg-yellow-100 text-yellow-800'}`}>
+                                                    {order.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                                            No orders yet
                                         </td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </div>

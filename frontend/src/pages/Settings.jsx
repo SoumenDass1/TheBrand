@@ -16,10 +16,11 @@ const Settings = () => {
         name: user?.name || '',
         email: user?.email || '',
         phone: user?.phone || '',
-        address: user?.address || '',
+        addressLine1: user?.addressLine1 || '',
+        addressLine2: user?.addressLine2 || '',
         city: user?.city || '',
         state: user?.state || '',
-        zip: user?.zip || '',
+        zipCode: user?.zipCode || '',
         country: user?.country || '',
         avatar: user?.avatar || null
     });
@@ -31,6 +32,13 @@ const Settings = () => {
                 ...prev,
                 name: user.name || '',
                 email: user.email || '',
+                phone: user.phone || '',
+                addressLine1: user.addressLine1 || '',
+                addressLine2: user.addressLine2 || '',
+                city: user.city || '',
+                state: user.state || '',
+                zipCode: user.zipCode || '',
+                country: user.country || '',
                 avatar: user.avatar || null
             }));
         }
@@ -91,13 +99,14 @@ const Settings = () => {
         e.preventDefault();
         setIsLoading(true);
 
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Update user context
-        updateUser(formData);
-
-        setIsLoading(false);
+        try {
+            // Call API to update user profile
+            await updateUser(formData);
+        } catch (error) {
+            console.error('Failed to update profile:', error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -134,6 +143,17 @@ const Settings = () => {
                                     <button onClick={startCamera}>
                                         <Camera size={16} /> Take Photo
                                     </button>
+                                    {formData.avatar && (
+                                        <button
+                                            onClick={() => {
+                                                setFormData(prev => ({ ...prev, avatar: null }));
+                                                setShowUploadOptions(false);
+                                            }}
+                                            className="remove-photo-btn"
+                                        >
+                                            <X size={16} /> Remove Photo
+                                        </button>
+                                    )}
                                 </div>
                             )}
                             <input
@@ -216,16 +236,30 @@ const Settings = () => {
                             <h3 className="card-title mb-6">Address Details</h3>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label>Street Address</label>
+                                    <label>Address Line 1</label>
                                     <div className="input-wrapper">
                                         <MapPin size={18} className="input-icon" />
                                         <input
                                             type="text"
-                                            name="address"
-                                            value={formData.address}
+                                            name="addressLine1"
+                                            value={formData.addressLine1}
                                             onChange={handleChange}
                                             className="form-input"
-                                            placeholder="123 Main St"
+                                            placeholder="Street address, P.O. box, etc."
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-group full-width">
+                                    <label>Address Line 2 (Optional)</label>
+                                    <div className="input-wrapper">
+                                        <MapPin size={18} className="input-icon" />
+                                        <input
+                                            type="text"
+                                            name="addressLine2"
+                                            value={formData.addressLine2}
+                                            onChange={handleChange}
+                                            className="form-input"
+                                            placeholder="Apartment, suite, unit, etc."
                                         />
                                     </div>
                                 </div>
@@ -253,8 +287,8 @@ const Settings = () => {
                                     <label>Zip Code</label>
                                     <input
                                         type="text"
-                                        name="zip"
-                                        value={formData.zip}
+                                        name="zipCode"
+                                        value={formData.zipCode}
                                         onChange={handleChange}
                                         className="form-input"
                                     />
