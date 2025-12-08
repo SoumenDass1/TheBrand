@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Package, Truck, CheckCircle, Clock, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import api from '../utils/api';
 import '../css/Orders.css';
 
 import InvoiceModal from '../components/InvoiceModal';
@@ -10,19 +11,33 @@ const Orders = () => {
     const [orders, setOrders] = useState([]);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
 
+    const [loading, setLoading] = useState(true);
+
+    const fetchOrders = async () => {
+        try {
+            const { data } = await api.get('/orders/myorders');
+            setOrders(data);
+        } catch (error) {
+            console.error('Failed to fetch orders:', error);
+            // Don't show toast on initial load error to avoid spam, or handle gracefully
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-        setOrders(savedOrders);
+        fetchOrders();
     }, []);
 
-    const handleCancelOrder = (orderId) => {
+    const handleCancelOrder = async (orderId) => {
         if (window.confirm('Are you sure you want to cancel this order?')) {
-            const updatedOrders = orders.map(order =>
-                order.id === orderId ? { ...order, status: 'Cancelled' } : order
-            );
-            setOrders(updatedOrders);
-            localStorage.setItem('orders', JSON.stringify(updatedOrders));
-            toast.success('Order cancelled successfully');
+            try {
+                await api.put(`/orders/${orderId}/status`, { status: "Cancelled" });
+                toast.success('Order cancelled successfully');
+                fetchOrders(); // Refresh list
+            } catch (error) {
+                toast.error(error.response?.data?.message || 'Failed to cancel order');
+            }
         }
     };
 
@@ -66,7 +81,7 @@ const Orders = () => {
                                             </div>
                                             <div className="info-group">
                                                 <label>Date</label>
-                                                <span>{order.date}</span>
+                                                <span>{new Date(order.createdAt).toLocaleDateString()}</span>
                                             </div>
                                             <div className="info-group">
                                                 <label>Total Amount</label>
@@ -109,16 +124,19 @@ const Orders = () => {
                                     )}
 
                                     <div className="order-items">
-                                        {order.items.map((item, idx) => (
-                                            <div key={idx} className="order-item">
-                                                <img src={item.image} alt={item.name} className="item-image" />
-                                                <div className="item-details">
-                                                    <h4>{item.name}</h4>
-                                                    <p className="item-meta">Size: {item.size} | Qty: {item.quantity}</p>
-                                                    <p className="item-price">${item.price.toFixed(2)}</p>
+                                        {order.items.map((item, idx) => {
+                                            const product = item.product || {}; // Handle potential missing product
+                                            return (
+                                                <div key={idx} className="order-item">
+                                                    <img src={product.image || 'https://via.placeholder.com/100'} alt={product.name} className="item-image" />
+                                                    <div className="item-details">
+                                                        <h4>{product.name || 'Unknown Product'}</h4>
+                                                        <p className="item-meta">Size: {item.size || 'N/A'} | Qty: {item.quantity}</p>
+                                                        <p className="item-price">${item.price.toFixed(2)}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
 
                                     <div className="order-actions">
