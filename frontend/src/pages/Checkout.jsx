@@ -53,19 +53,22 @@ const Checkout = () => {
             return;
         }
 
-        // Simulate API call
+        // Call API
         const loadingToast = toast.loading('Processing your order...');
 
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        try {
+            await placeOrder(formData);
+            toast.dismiss(loadingToast);
+            setOrderSuccess(true);
 
-        toast.dismiss(loadingToast);
-        setOrderSuccess(true);
-
-        // Wait for animation before redirecting
-        setTimeout(() => {
-            placeOrder(formData);
-            navigate('/account/orders');
-        }, 2000);
+            // Wait for animation before redirecting
+            setTimeout(() => {
+                navigate('/account/orders');
+            }, 2000);
+        } catch (error) {
+            toast.dismiss(loadingToast);
+            // Error handled in context
+        }
     };
 
     const shipping = 0; // Free shipping logic can be added here

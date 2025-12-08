@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import api from '../utils/api';
 
 const CartContext = createContext();
 
@@ -47,20 +48,30 @@ export const CartProvider = ({ children }) => {
         setCartItems([]);
     };
 
-    const placeOrder = (orderDetails) => {
-        const newOrder = {
-            id: `ORD-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`,
-            date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-            total: cartTotal,
-            status: 'Processing',
-            items: [...cartItems],
-            ...orderDetails
-        };
+    const placeOrder = async (orderDetails) => {
+        try {
+            const { data } = await api.post('/orders', {
+                orderItems: cartItems,
+                addressLine1: orderDetails.addressLine1,
+                addressLine2: orderDetails.addressLine2,
+                city: orderDetails.city,
+                zipCode: orderDetails.zipCode,
+                phone: orderDetails.phone,
+                totalPrice: cartTotal,
+            });
 
-        const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-        localStorage.setItem('orders', JSON.stringify([newOrder, ...existingOrders]));
-        clearCart();
-        return newOrder;
+            // Keep localStorage logic for backup/offline or just remove it? 
+            // Better to rely on backend source of truth now, but we can update local state if needed.
+            // For now, let's just clear cart.
+
+            clearCart();
+            toast.success('Order placed successfully!');
+            return data;
+        } catch (error) {
+            console.error('Order placement failed:', error);
+            toast.error(error.response?.data?.message || 'Failed to place order');
+            throw error;
+        }
     };
 
     const cartTotal = cartItems.reduce(
