@@ -37,6 +37,12 @@ const googleAuth = async (req, res) => {
                     avatar: picture,
                 },
             });
+        } else if (!user.avatar) {
+            // If user exists but has no avatar (e.g. was removed), restore Google avatar
+            user = await prisma.user.update({
+                where: { id: user.id },
+                data: { avatar: picture },
+            });
         }
 
         res.json({
