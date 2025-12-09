@@ -68,8 +68,13 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('cart'); // Fix: Clear cart on logout
         setUser(null);
         toast.success('Logged out');
+        // Optional: window.location.reload() to force clean state if context doesn't auto-update
+        // But removing token triggers App redirects usually. 
+        // Let's force reload just to be safe and simple for the user's "time nahi hai".
+        setTimeout(() => window.location.reload(), 500);
     };
 
     const register = async (userData) => {

@@ -109,6 +109,12 @@ const Settings = () => {
         }
     };
 
+    const getInitials = (name) => {
+        return name
+            ? name.split(' ').map((n) => n[0]).join('').toUpperCase().substring(0, 2)
+            : 'U';
+    };
+
     return (
         <div className="settings-page section-padding">
             <div className="container">
@@ -125,7 +131,9 @@ const Settings = () => {
                                 {formData.avatar ? (
                                     <img src={formData.avatar} alt="Profile" />
                                 ) : (
-                                    <User size={64} className="default-avatar" />
+                                    <div className="avatar-placeholder">
+                                        {getInitials(formData.name)}
+                                    </div>
                                 )}
                             </div>
                             <button
