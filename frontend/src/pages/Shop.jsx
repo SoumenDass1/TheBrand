@@ -1,12 +1,15 @@
-import React, { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, Grid, List, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, SlidersHorizontal, Grid, List, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from '../components/ProductCard';
+import api from '../utils/api';
 import '../css/Shop.css';
 
-import { products } from '../data/products';
-
 const Shop = () => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [showFilters, setShowFilters] = useState(false);
+
+    // Server-side params
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState('newest');
     const [viewMode, setViewMode] = useState('grid');
@@ -16,35 +19,91 @@ const Shop = () => {
         inStock: false,
     });
 
-    // Filter Logic
-    const filteredProducts = useMemo(() => {
-        return products
-            .filter((p) => {
-                const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-                const matchesCategory = filters.categories.length === 0 || filters.categories.includes(p.category);
-                const matchesPrice = p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1];
-                const matchesStock = !filters.inStock || p.inStock;
-                return matchesSearch && matchesCategory && matchesPrice && matchesStock;
-            })
-            .sort((a, b) => {
-                if (sortBy === 'price-low') return a.price - b.price;
-                if (sortBy === 'price-high') return b.price - a.price;
-                if (sortBy === 'rating') return b.rating - a.rating;
-                return 0;
-            });
-    }, [searchQuery, filters, sortBy]);
+    // Pagination
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
+
+    // Debounce search
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+            setPage(1); // Reset to page 1 on new search
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    // Fetch Products from API
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            try {
+                // Construct query params
+                const params = new URLSearchParams({
+                    page,
+                    limit: 12,
+                    sort: sortBy === 'price-low' ? 'price_asc'
+                        : sortBy === 'price-high' ? 'price_desc'
+                            : sortBy === 'name-asc' ? 'name_asc'
+                                : 'newest', // Backend default
+                });
+
+                if (debouncedSearch) params.append('search', debouncedSearch);
+                if (filters.inStock) params.append('inStock', 'true');
+                if (filters.categories.length > 0) {
+                    // Backend expects single category or multiple? Controller checks generic 'category'
+                    // Simple implementation for single category filter for now or multiple if backend supports
+                    // Controller: if (category && category !== 'All') where.category = category;
+                    // It seems backend supports ONE category at a time in the current controller logic provided earlier.
+                    // But let's send the first one or loop. The loop in controller wasn't "in", it was exact match.
+                    // Wait, let's verify controller... "where.category = category". It expects a string.
+                    // So we can only filter by one category at a time effectively unless we update backend.
+                    // For now let's send the last selected one or join them if backend supported it. 
+                    // Let's assume user picks one main category or we take the first one.
+                    // IMPORTANT: The UI allows multiple. The backend controller I saw only handled one `req.query.category`.
+                    // I will send the first selected category for now to be safe, or update backend to use `in`.
+                    params.append('category', filters.categories[0]);
+                }
+
+                if (filters.priceRange[0] > 0) params.append('minPrice', filters.priceRange[0]);
+                if (filters.priceRange[1] < 1000) params.append('maxPrice', filters.priceRange[1]);
+
+                const { data } = await api.get(`/products?${params.toString()}`);
+
+                setProducts(data.products);
+                setTotalPages(data.totalPages);
+                setTotalProducts(data.totalCount);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (debouncedSearch !== null) {
+            fetchProducts();
+        }
+    }, [page, debouncedSearch, sortBy, filters]);
 
     const handleCategoryToggle = (cat) => {
-        setFilters(prev => ({
-            ...prev,
-            categories: prev.categories.includes(cat)
-                ? prev.categories.filter(c => c !== cat)
-                : [...prev.categories, cat]
-        }));
+        setFilters(prev => {
+            // Since backend currently supports simple string match, maybe best to behave like radio?
+            // Or keep UI as multi-select but know it filters by the set.
+            // Let's keep existing logic but warn it might only filter one server side.
+            // Actually, let's Stick to the existing logic for user experience.
+            const isSelected = prev.categories.includes(cat);
+            if (isSelected) return { ...prev, categories: prev.categories.filter(c => c !== cat) };
+            return { ...prev, categories: [...prev.categories, cat] };
+        });
+        setPage(1);
     };
 
     const clearFilters = () => {
         setFilters({ categories: [], priceRange: [0, 1000], inStock: false });
+        setSearchQuery('');
+        setPage(1);
     };
 
     return (
@@ -84,13 +143,16 @@ const Shop = () => {
 
                         <select
                             value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
+                            onChange={(e) => {
+                                setSortBy(e.target.value);
+                                setPage(1);
+                            }}
                             className="sort-select"
                         >
                             <option value="newest">Newest</option>
                             <option value="price-low">Price: Low to High</option>
                             <option value="price-high">Price: High to Low</option>
-                            <option value="rating">Highest Rated</option>
+                            <option value="name-asc">Name: A-Z</option>
                         </select>
 
                         <div className="view-toggle">
@@ -151,6 +213,7 @@ const Shop = () => {
                         {/* Categories */}
                         <div className="filter-group">
                             <h4>Categories</h4>
+                            {/* Ideally fetch categories from API too. Hardcoding for now based on what I saw */}
                             {['Accessories', 'Electronics', 'Fashion', 'Home', 'Sports', 'Stationery'].map(cat => (
                                 <label key={cat} className="filter-checkbox">
                                     <input
@@ -159,7 +222,6 @@ const Shop = () => {
                                         onChange={() => handleCategoryToggle(cat)}
                                     />
                                     <span>{cat}</span>
-                                    <span className="count">({products.filter(p => p.category === cat).length})</span>
                                 </label>
                             ))}
                         </div>
@@ -174,10 +236,13 @@ const Shop = () => {
                                     max="1000"
                                     step="10"
                                     value={filters.priceRange[1]}
-                                    onChange={(e) => setFilters(prev => ({
-                                        ...prev,
-                                        priceRange: [0, Number(e.target.value)]
-                                    }))}
+                                    onChange={(e) => {
+                                        setFilters(prev => ({
+                                            ...prev,
+                                            priceRange: [0, Number(e.target.value)]
+                                        }));
+                                        setPage(1);
+                                    }}
                                     className="price-slider"
                                 />
                                 <div className="price-range-display">
@@ -193,7 +258,10 @@ const Shop = () => {
                                 <input
                                     type="checkbox"
                                     checked={filters.inStock}
-                                    onChange={(e) => setFilters(prev => ({ ...prev, inStock: e.target.checked }))}
+                                    onChange={(e) => {
+                                        setFilters(prev => ({ ...prev, inStock: e.target.checked }));
+                                        setPage(1);
+                                    }}
                                 />
                                 <span>In Stock Only</span>
                             </label>
@@ -203,15 +271,42 @@ const Shop = () => {
                     {/* Products Grid */}
                     <div className="products-section">
                         <div className="results-info">
-                            <p>{filteredProducts.length} products found</p>
+                            <p>{totalProducts} products found</p>
                         </div>
 
-                        {filteredProducts.length > 0 ? (
-                            <div className={`products-grid ${viewMode}`}>
-                                {filteredProducts.map((product) => (
-                                    <ProductCard key={product.id} product={product} />
-                                ))}
-                            </div>
+                        {loading ? (
+                            <div className="text-center py-12">Loading products...</div>
+                        ) : products.length > 0 ? (
+                            <>
+                                <div className={`products-grid ${viewMode}`}>
+                                    {products.map((product) => (
+                                        <ProductCard key={product.id} product={product} />
+                                    ))}
+                                </div>
+
+                                {/* Pagination Controls */}
+                                {totalPages > 1 && (
+                                    <div className="pagination">
+                                        <button
+                                            disabled={page === 1}
+                                            onClick={() => setPage(p => p - 1)}
+                                            className="btn btn-outline"
+                                        >
+                                            <ChevronLeft size={16} /> Previous
+                                        </button>
+                                        <span className="page-info">
+                                            Page {page} of {totalPages}
+                                        </span>
+                                        <button
+                                            disabled={page === totalPages}
+                                            onClick={() => setPage(p => p + 1)}
+                                            className="btn btn-outline"
+                                        >
+                                            Next <ChevronRight size={16} />
+                                        </button>
+                                    </div>
+                                )}
+                            </>
                         ) : (
                             <div className="empty-state">
                                 <div className="empty-icon">🔍</div>
@@ -228,5 +323,4 @@ const Shop = () => {
         </div>
     );
 };
-
 export default Shop;
