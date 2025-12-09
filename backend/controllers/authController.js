@@ -138,14 +138,14 @@ const updateUserProfile = async (req, res) => {
                 data: {
                     name: req.body.name || user.name,
                     email: req.body.email || user.email,
-                    phone: req.body.phone || user.phone,
-                    addressLine1: req.body.addressLine1 || user.addressLine1,
-                    addressLine2: req.body.addressLine2 || user.addressLine2,
+                    phone: req.body.phone !== undefined ? req.body.phone : user.phone,
+                    addressLine1: req.body.addressLine1 !== undefined ? req.body.addressLine1 : user.addressLine1,
+                    addressLine2: req.body.addressLine2 !== undefined ? req.body.addressLine2 : user.addressLine2,
                     city: req.body.city || user.city,
                     state: req.body.state || user.state,
                     country: req.body.country || user.country,
                     zipCode: req.body.zipCode || user.zipCode,
-                    avatar: req.body.avatar || user.avatar,
+                    avatar: req.body.avatar !== undefined ? req.body.avatar : user.avatar,
                 },
             });
 
